@@ -88,4 +88,4 @@ def set_Convpass(model, distilled, adapt_dim=192, dim=8, s=1, xavier_init=False)
             bound_method = forward_block.__get__(_, _.__class__)
             setattr(_, 'forward', bound_method)
         elif len(list(_.children())) != 0:
-            set_Convpass(_, distilled, dim, s, xavier_init)
+            set_Convpass(_, distilled, adapt_dim, dim, s, xavier_init)
