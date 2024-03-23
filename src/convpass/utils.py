@@ -24,7 +24,7 @@ class QuickGELU(nn.Module):
 
 
 class Convpass(nn.Module):
-    def __init__(self, adapt_dim, dim=8, xavier_init=False, distilled=None):
+    def __init__(self, adapt_dim=192, dim=8, xavier_init=False, distilled=None):
         super().__init__()
 
         self.adapter_conv = nn.Conv2d(dim, dim, 3, 1, 1)
