@@ -82,14 +82,16 @@ def construct_train_loader(dataset_name, data_path, num_classes, batch_size=64, 
         pin_memory=pin_memory,
     )
 
-def construct_trainval_loader(cfg):
+def construct_trainval_loader(dataset_name, data_path, num_classes, batch_size=64, num_gpus=1):
     """Train loader wrapper."""
     if num_gpus > 1:
         drop_last = True
     else:
         drop_last = False
     return _construct_loader(
-        cfg=cfg,
+        dataset_name=dataset_name,
+        data_path=data_path,
+        num_classes=num_classes,
         split="trainval",
         batch_size=int(batch_size / num_gpus),
         shuffle=True,
@@ -97,10 +99,12 @@ def construct_trainval_loader(cfg):
     )
 
 
-def construct_test_loader(cfg):
+def construct_test_loader(dataset_name, data_path, num_classes, batch_size=64, num_gpus=1):
     """Test loader wrapper."""
     return _construct_loader(
-        cfg=cfg,
+        dataset_name=dataset_name,
+        data_path=data_path,
+        num_classes=num_classes,
         split="test",
         batch_size=int(batch_size / num_gpus),
         shuffle=False,
@@ -108,14 +112,16 @@ def construct_test_loader(cfg):
     )
 
 
-def construct_val_loader(cfg, batch_size=None):
+def construct_val_loader(dataset_name, data_path, num_classes, batch_size=64, num_gpus=1):
     if batch_size is None:
         bs = int(batch_size / num_gpus)
     else:
         bs = batch_size
     """Validation loader wrapper."""
     return _construct_loader(
-        cfg=cfg,
+        dataset_name=dataset_name,
+        data_path=data_path,
+        num_classes=num_classes,
         split="val",
         batch_size=bs,
         shuffle=False,
