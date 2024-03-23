@@ -78,7 +78,7 @@ class Convpass(nn.Module):
 
 
 
-def set_Convpass(model, method, distilled, dim=8, s=1, xavier_init=False):
+def set_Convpass(model, distilled, dim=8, s=1, xavier_init=False):
     for _ in model.children():
         if type(_) == timm.models.vision_transformer.Block:
             _.adapter_attn = Convpass(dim, xavier_init, distilled)
@@ -88,4 +88,4 @@ def set_Convpass(model, method, distilled, dim=8, s=1, xavier_init=False):
             bound_method = forward_block.__get__(_, _.__class__)
             setattr(_, 'forward', bound_method)
         elif len(list(_.children())) != 0:
-            set_Convpass(_, method, distilled, dim, s, xavier_init)
+            set_Convpass(_, distilled, dim, s, xavier_init)
