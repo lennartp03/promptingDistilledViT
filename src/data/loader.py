@@ -20,7 +20,7 @@ from torch.utils.data.sampler import RandomSampler
 # }
 
 
-def _construct_loader(dataset_name, data_path, num_classes, split, shuffle, drop_last, batch_size=64, crop_size=224, num_gpus=1, num_workers=4, pin_memory=True):
+def _construct_loader(dataset_name, data_path, num_classes, split, shuffle, drop_last, num_workers, batch_size=64, crop_size=224, num_gpus=1, pin_memory=True):
     """Constructs the data loader for the given dataset."""
     #dataset_name = cfg.DATA.NAME
 
@@ -65,7 +65,7 @@ def _construct_loader(dataset_name, data_path, num_classes, split, shuffle, drop
 #         drop_last=drop_last,
 #     )
 
-def construct_train_loader(dataset_name, data_path, num_classes, batch_size=64, shuffle=True, crop_size=224, drop_last=True, num_gpus=1, num_workers=4, pin_memory=True):
+def construct_train_loader(dataset_name, data_path, num_classes, batch_size=64, shuffle=True, crop_size=224, drop_last=True, num_gpus=1, num_workers=2, pin_memory=True):
     # Adjust batch_size for the number of GPUs
     adjusted_batch_size = int(batch_size / num_gpus)
     return _construct_loader(
@@ -82,7 +82,7 @@ def construct_train_loader(dataset_name, data_path, num_classes, batch_size=64, 
         pin_memory=pin_memory,
     )
 
-def construct_trainval_loader(dataset_name, data_path, num_classes, batch_size=64, num_gpus=1):
+def construct_trainval_loader(dataset_name, data_path, num_classes, num_workers=2, batch_size=64, num_gpus=1):
     """Train loader wrapper."""
     if num_gpus > 1:
         drop_last = True
@@ -96,10 +96,11 @@ def construct_trainval_loader(dataset_name, data_path, num_classes, batch_size=6
         batch_size=int(batch_size / num_gpus),
         shuffle=True,
         drop_last=drop_last,
+        num_workers=num_workers,
     )
 
 
-def construct_test_loader(dataset_name, data_path, num_classes, batch_size=64, num_gpus=1):
+def construct_test_loader(dataset_name, data_path, num_classes, num_workers=2, batch_size=64, num_gpus=1):
     """Test loader wrapper."""
     return _construct_loader(
         dataset_name=dataset_name,
@@ -109,10 +110,11 @@ def construct_test_loader(dataset_name, data_path, num_classes, batch_size=64, n
         batch_size=int(batch_size / num_gpus),
         shuffle=False,
         drop_last=False,
+        num_workers=num_workers,
     )
 
 
-def construct_val_loader(dataset_name, data_path, num_classes, batch_size=64, num_gpus=1):
+def construct_val_loader(dataset_name, data_path, num_classes, num_workers=2, batch_size=64, num_gpus=1):
     if batch_size is None:
         bs = int(batch_size / num_gpus)
     else:
@@ -126,6 +128,7 @@ def construct_val_loader(dataset_name, data_path, num_classes, batch_size=64, nu
         batch_size=bs,
         shuffle=False,
         drop_last=False,
+        num_workers=num_workers,
     )
 
 
