@@ -24,7 +24,7 @@ class QuickGELU(nn.Module):
 
 
 class Convpass(nn.Module):
-    def __init__(self, dim=8, adapt_dim=192, xavier_init=False, distilled=None):
+    def __init__(self, adapt_dim, dim=8, xavier_init=False, distilled=None):
         super().__init__()
 
         self.adapter_conv = nn.Conv2d(dim, dim, 3, 1, 1)
@@ -78,11 +78,11 @@ class Convpass(nn.Module):
 
 
 
-def set_Convpass(model, distilled, dim=8, s=1, xavier_init=False):
+def set_Convpass(model, distilled, adapt_dim=192, dim=8, s=1, xavier_init=False):
     for _ in model.children():
         if type(_) == timm.models.vision_transformer.Block:
-            _.adapter_attn = Convpass(dim, xavier_init, distilled)
-            _.adapter_mlp = Convpass(dim, xavier_init, distilled)
+            _.adapter_attn = Convpass(adapt_dim, dim, xavier_init, distilled)
+            _.adapter_mlp = Convpass(adapt_dim, dim, xavier_init, distilled)
             _.s = s
             _.drop_path = DropPath(drop_prob=0.1)
             bound_method = forward_block.__get__(_, _.__class__)
