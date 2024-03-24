@@ -41,10 +41,10 @@ class FGVCDataPytorch:
         test_dataset = self.dataset_class(self.data_dir, split='test', download=True, transform=self.transform)
 
         labels = [label for _, label in full_train_dataset]
-        train_indices, valid_indices = self._get_balanced_indices(labels)
+        train_indices, _ = self._get_balanced_indices(labels)
 
         self.train_loader = DataLoader(full_train_dataset, batch_size=self.batch_size, sampler=SubsetRandomSampler(train_indices))
-        self.val_loader = DataLoader(full_train_dataset, batch_size=self.batch_size, sampler=SubsetRandomSampler(valid_indices))
+        #self.val_loader = DataLoader(full_train_dataset, batch_size=self.batch_size, sampler=SubsetRandomSampler(valid_indices))
 
         self.test_loader = DataLoader(test_dataset, batch_size=self.batch_size, shuffle=False)
 
@@ -70,5 +70,5 @@ class FGVCDataPytorch:
         return train_indices, valid_indices
 
     def get_loaders(self):
-        return self.train_loader, self.val_loader, self.test_loader
+        return self.train_loader, self.test_loader
 
