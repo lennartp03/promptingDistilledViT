@@ -20,7 +20,7 @@ from torch.utils.data.sampler import RandomSampler
 # }
 
 
-def _construct_loader(dataset_name, data_path, num_classes, split, shuffle, drop_last, num_workers, batch_size=64, crop_size=224, num_gpus=1, pin_memory=True):
+def _construct_loader(dataset_name, data_path, num_classes, split, shuffle, drop_last, num_workers, pin_memory, batch_size=64, crop_size=224, num_gpus=1):
     """Constructs the data loader for the given dataset."""
     #dataset_name = cfg.DATA.NAME
 
@@ -82,7 +82,7 @@ def construct_train_loader(dataset_name, data_path, num_classes, batch_size=64, 
         pin_memory=pin_memory,
     )
 
-def construct_trainval_loader(dataset_name, data_path, num_classes, num_workers=2, batch_size=64, num_gpus=1):
+def construct_trainval_loader(dataset_name, data_path, num_classes, num_workers=2, batch_size=64, num_gpus=1, pin_memory=True):
     """Train loader wrapper."""
     if num_gpus > 1:
         drop_last = True
@@ -97,10 +97,11 @@ def construct_trainval_loader(dataset_name, data_path, num_classes, num_workers=
         shuffle=True,
         drop_last=drop_last,
         num_workers=num_workers,
+        pin_memory=pin_memory,
     )
 
 
-def construct_test_loader(dataset_name, data_path, num_classes, num_workers=2, batch_size=64, num_gpus=1):
+def construct_test_loader(dataset_name, data_path, num_classes, num_workers=2, batch_size=64, num_gpus=1, pin_memory=True):
     """Test loader wrapper."""
     return _construct_loader(
         dataset_name=dataset_name,
@@ -111,10 +112,11 @@ def construct_test_loader(dataset_name, data_path, num_classes, num_workers=2, b
         shuffle=False,
         drop_last=False,
         num_workers=num_workers,
+        pin_memory=pin_memory,
     )
 
 
-def construct_val_loader(dataset_name, data_path, num_classes, num_workers=2, batch_size=64, num_gpus=1):
+def construct_val_loader(dataset_name, data_path, num_classes, num_workers=2, batch_size=64, num_gpus=1, pin_memory=True):
     if batch_size is None:
         bs = int(batch_size / num_gpus)
     else:
@@ -129,6 +131,7 @@ def construct_val_loader(dataset_name, data_path, num_classes, num_workers=2, ba
         shuffle=False,
         drop_last=False,
         num_workers=num_workers,
+        pin_memory=pin_memory,
     )
 
 

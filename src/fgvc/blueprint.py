@@ -4,12 +4,13 @@ from torch.utils.data.sampler import SubsetRandomSampler
 import numpy as np
 
 class FGVCDataPytorch:
-    def __init__(self, num_classes=10, data_dir='./data', train_split_percent=0, batch_size=64, dataset=None, samples_per_class=None):
+    def __init__(self, data_dir='./data', train_split_percent=0, batch_size=64, dataset=None, samples_per_class=None, num_workers=2, pin_memory=True):
         self.data_dir = data_dir
         self.train_split_percent = train_split_percent
         self.batch_size = batch_size
         self.samples_per_class = samples_per_class
-
+        self.num_workers = num_workers
+        self.pin_memory = pin_memory
 
         self.transform = transforms.Compose([
             transforms.Resize((224, 224), interpolation=3),
@@ -27,6 +28,7 @@ class FGVCDataPytorch:
 
         self.dataset_class = datasets_switch[dataset]
         self.datasetname = dataset
+
         self._prepare_datasets()
 
 
@@ -43,10 +45,10 @@ class FGVCDataPytorch:
         labels = [label for _, label in full_train_dataset]
         train_indices, _ = self._get_balanced_indices(labels)
 
-        self.train_loader = DataLoader(full_train_dataset, batch_size=self.batch_size, sampler=SubsetRandomSampler(train_indices))
+        self.train_loader = DataLoader(full_train_dataset, batch_size=self.batch_size, sampler=SubsetRandomSampler(train_indices), num_workers=self.num_workers, pin_memory=self.pin_memory)
         #self.val_loader = DataLoader(full_train_dataset, batch_size=self.batch_size, sampler=SubsetRandomSampler(valid_indices))
 
-        self.test_loader = DataLoader(test_dataset, batch_size=self.batch_size, shuffle=False)
+        self.test_loader = DataLoader(test_dataset, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers, pin_memory=self.pin_memory)
 
     def _get_balanced_indices(self, labels):
         num_classes = len(set(labels))
