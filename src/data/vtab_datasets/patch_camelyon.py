@@ -37,7 +37,7 @@ class PatchCamelyonData(base.ImageTfdsData):
 
     # Defines dataset specific train/val/trainval/test splits.
     tfds_splits = {
-        "test": "test",
+        "test": "test[:15000]",
         "train": "train",
         "val": "validation",
         "trainval": "train+validation",
@@ -47,7 +47,7 @@ class PatchCamelyonData(base.ImageTfdsData):
     }
     # Creates a dict with example counts.
     num_samples_splits = {
-        "test": dataset_builder.info.splits["test"].num_examples,
+        "test": 15000,
         "train": dataset_builder.info.splits["train"].num_examples,
         "val": dataset_builder.info.splits["validation"].num_examples,
         "train800": 800,
