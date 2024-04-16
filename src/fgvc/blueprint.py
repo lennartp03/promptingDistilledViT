@@ -43,11 +43,15 @@ class FGVCDataPytorch:
         test_dataset = self.dataset_class(self.data_dir, split='test', download=True, transform=self.transform)
 
         labels = [label for _, label in full_train_dataset]
-        train_indices, _ = self._get_balanced_indices(labels)
+        train_indices, valid_indices = self._get_balanced_indices(labels)
+
+        if self.datasetname in ['Pets', 'StanfordCars', 'Food101']:
+          self.val_loader = DataLoader(full_train_dataset, batch_size=self.batch_size, sampler=SubsetRandomSampler(valid_indices), num_workers=self.num_workers, pin_memory=self.pin_memory)
+        else:
+           val_dataset = self.dataset_class(self.data_dir, split='val', download=True, transform=self.transform)
+           self.val_loader = DataLoader(val_dataset, batch_size=self.batch_size, num_workers=self.num_workers, pin_memory=self.pin_memory)
 
         self.train_loader = DataLoader(full_train_dataset, batch_size=self.batch_size, sampler=SubsetRandomSampler(train_indices), num_workers=self.num_workers, pin_memory=self.pin_memory)
-        #self.val_loader = DataLoader(full_train_dataset, batch_size=self.batch_size, sampler=SubsetRandomSampler(valid_indices))
-
         self.test_loader = DataLoader(test_dataset, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers, pin_memory=self.pin_memory)
 
     def _get_balanced_indices(self, labels):
@@ -60,17 +64,15 @@ class FGVCDataPytorch:
         train_indices = []
         valid_indices = []
 
-
         for class_indices in indices_per_class.values():
             np.random.shuffle(class_indices)
             train_indices.extend(class_indices[:self.samples_per_class])
-            # Optionally, you could add the remaining indices to valid_indices if needed
             valid_indices.extend(class_indices[self.samples_per_class:])
 
-        print(len(train_indices))
+        print(f'Train/Val indice length: {len(train_indices)}, {len(valid_indices)}')
 
         return train_indices, valid_indices
 
     def get_loaders(self):
-        return self.train_loader, self.test_loader
+        return self.train_loader, self.val_loader, self.test_loader
 
